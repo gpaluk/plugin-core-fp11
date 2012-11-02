@@ -281,12 +281,11 @@ package io.plugin.core.system
 			_nextp = nextp;
 			_seed = seed;
 			
-			var clone: Vector.<int> = new Vector.<int>();
-			for each ( var entry: int in _seedList )
+			_seedList  = new Vector.<int>();
+			for each ( var entry: int in seedList )
 			{
-				clone.push( entry );
+				_seedList.push( entry );
 			}
-			
 		}
 		
 		
