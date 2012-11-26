@@ -115,9 +115,9 @@ package io.plugin.core.pool
 		 * is the programmers responsibilty to ensure that he/she does not exceed this
 		 * pool size</p>
 		 * 
-		 * @return	A
+		 * @return	An object from the pool
 		 */
-		public function aquire(): *
+		public function acquire(): *
 		{
 			switch( _loadingMode )
 			{
