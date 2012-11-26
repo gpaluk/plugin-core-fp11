@@ -16,9 +16,10 @@ package io.plugin.core.interfaces
 	 * 
 	 * @author Gary Paluk - http://www.plugin.io
 	 */
-	public interface IDisposable 
+	public interface IDisposable
 	{
 		function dispose(): void;
+		// function get isDisposed(): Boolean; // TODO consider enforcing a disposed flag
 	}
 	
 }

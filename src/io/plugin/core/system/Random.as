@@ -104,7 +104,7 @@ package io.plugin.core.system
 		}
 		
 		/**
-		 * Create an sample for internal use
+		 * Create a sample for internal use
 		 * 
 		 * @return	The new sample
 		 */
@@ -273,6 +273,7 @@ package io.plugin.core.system
 		}
 		
 		/**
+		 * @internal
 		 * Intenal use only
 		 */
 		protected function set( next: int, nextp: int, seed: int, seedList: Vector.<int> ): void
