@@ -199,6 +199,7 @@ package io.plugin.core.system
 			{
 				buffer.writeByte( internalSample() % 0x100 );
 			}
+			buffer.position = 0;
 		}
 		
 		/**
