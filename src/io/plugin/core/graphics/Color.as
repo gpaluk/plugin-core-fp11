@@ -50,11 +50,7 @@ package io.plugin.core.graphics
 				return false;
 			}
 			var c: Color = o as Color;
-			if ( c.r == _r && c.g == _g && c.b == _b && c.a == _a )
-			{
-				return true;
-			}
-			return false;
+			return ( c.r == _r && c.g == _g && c.b == _b && c.a == _a );
 		}
 		
 		[Inline]
@@ -89,7 +85,8 @@ package io.plugin.core.graphics
 			if ( value < 0 )
 			{
 				value = 0;
-			} else if ( value > 1 )
+			}
+			else if ( value > 1 )
 			{
 				value = 1;
 			}
@@ -129,7 +126,8 @@ package io.plugin.core.graphics
 			if ( value < 0 )
 			{
 				value = 0;
-			} else if ( value > 1 )
+			}
+			else if ( value > 1 )
 			{
 				value = 1;
 			}
@@ -493,56 +491,62 @@ package io.plugin.core.graphics
 		
 		public static const ConvertFromFunction: Array =
 		[
-			null,
-			Color.ConvertFromR5G6B5,
-			Color.ConvertFromA1R5G5B5,
-			Color.ConvertFromA4R4G4B4,
-			Color.ConvertFromA8,
-			Color.ConvertFromL8,
-			Color.ConvertFromA8L8,
-			Color.ConvertFromR8G8B8,
-			Color.ConvertFromA8R8G8B8,
-			Color.ConvertFromA8B8G8R8,
-			Color.ConvertFromL16,
-			Color.ConvertFromG16R16,
-			Color.ConvertFromA16B16G16R16,
-			null,/*Color.ConvertFromR16F*/
-			null,/*Color.ConvertFromG16R16F*/
-			null,/*Color.ConvertFromA16B16G16R16F*/
-			null,/*Color.ConvertFromR32F*/
-			null,/*Color.ConvertFromG32R32F*/
-			null,/*Color.ConvertFromA32B32G32R32F*/
-			null,
-			null,
-			null,
-			null
+			null,										// NONE
+			Color.ConvertFromR5G6B5,					// R5G6B5
+			Color.ConvertFromA1R5G5B5,					// A1R5G5B5
+			Color.ConvertFromA4R4G4B4,					// A4R4G4B4
+			Color.ConvertFromA8,						// A8
+			Color.ConvertFromL8,						// L8
+			Color.ConvertFromA8L8,						// A8L8
+			Color.ConvertFromR8G8B8,					// R8G8B8
+			Color.ConvertFromA8R8G8B8,					// A8R8G8B8 (flash bitmapdata format)
+			Color.ConvertFromA8B8G8R8,					// A8B8G8R8
+			Color.ConvertFromL16,						// L16
+			Color.ConvertFromG16R16,					// G16R16
+			Color.ConvertFromA16B16G16R16,				// A16B16G16R16
+			null,/*Color.ConvertFromR16F*/				// R16F
+			null,/*Color.ConvertFromG16R16F*/			// G16R16F
+			null,/*Color.ConvertFromA16B16G16R16F*/		// A16B16G16R16F
+			null,/*Color.ConvertFromR32F*/				// R32F
+			null,/*Color.ConvertFromG32R32F*/			// G32R32F
+			null,/*Color.ConvertFromA32B32G32R32F*/		// A32B32G32R32F
+			null,										// DXT1
+			null,										// DXT3
+			null,										// DXT5
+			null,										// D24S8
+			null,										// BGRA
+			null,										// PVRTC
+			null,										// ETC1
 		];
 		
 		public static const ConvertToFunction: Array =
 		[
-			null,
-			Color.ConvertToR5G6B5,
-			Color.ConvertToA1R5G5B5,
-			Color.ConvertToA4R4G4B4,
-			Color.ConvertToA8,
-			Color.ConvertToL8,
-			Color.ConvertToA8L8,
-			Color.ConvertToR8G8B8,
-			Color.ConvertToA8R8G8B8,
-			Color.ConvertToA8B8G8R8,
-			Color.ConvertToL16,
-			Color.ConvertToG16R16,
-			Color.ConvertToA16B16G16R16,
-			null,/*Color.ConvertToR16F*/
-			null,/*Color.ConvertToG16R16F*/
-			null,/*Color.ConvertToA16B16G16R16F*/
-			null,/*Color.ConvertToR32F*/
-			null,/*Color.ConvertToG32R32F*/
-			null,/*Color.ConvertToA32B32G32R32F*/
-			null,
-			null,
-			null,
-			null
+			null,										// NONE
+			Color.ConvertToR5G6B5,						// R5G6B5
+			Color.ConvertToA1R5G5B5,					// A1R5G5B5
+			Color.ConvertToA4R4G4B4,					// A4R4G4B4
+			Color.ConvertToA8,							// A8
+			Color.ConvertToL8,							// L8
+			Color.ConvertToA8L8,						// A8L8
+			Color.ConvertToR8G8B8,						// R8G8B8
+			Color.ConvertToA8R8G8B8,					// A8R8G8B8 (flash bitmapdata format)
+			Color.ConvertToA8B8G8R8,					// A8B8G8R8
+			Color.ConvertToL16,							// L16
+			Color.ConvertToG16R16,						// G16R16
+			Color.ConvertToA16B16G16R16,				// A16B16G16R16
+			null,/*Color.ConvertToR16F*/				// R16F
+			null,/*Color.ConvertToG16R16F*/				// G16R16F
+			null,/*Color.ConvertToA16B16G16R16F*/		// A16B16G16R16F
+			null,/*Color.ConvertToR32F*/				// R32F
+			null,/*Color.ConvertToG32R32F*/				// G32R32F
+			null,/*Color.ConvertToA32B32G32R32F*/		// A32B32G32R32F
+			null,										// DXT1
+			null,										// DXT3
+			null,										// DXT5
+			null,										// D24S8
+			null,										// BGRA
+			null,										// PVRTC
+			null,										// ETC1
 		];
 		
 	}
