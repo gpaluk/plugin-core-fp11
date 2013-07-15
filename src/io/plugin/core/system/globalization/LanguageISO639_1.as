@@ -26,6 +26,8 @@ package io.plugin.core.system.globalization
 	public class LanguageISO639_1 implements IEquatable
 	{
 		
+		//use namespace plugin_core; 
+		
 		public static const AFAR: LanguageISO639_1 					= new LanguageISO639_1( "aa" );
 		public static const ABKHAZIAN: LanguageISO639_1 			= new LanguageISO639_1( "ab" );
 		public static const AFRIKAANS: LanguageISO639_1 			= new LanguageISO639_1( "af" );

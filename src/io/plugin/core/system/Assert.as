@@ -34,6 +34,16 @@ package io.plugin.core.system
 			}
 		}
 		
+		/**
+		 * Evaluates an expression and throws an error if the expression is true.
+		 * 
+		 * @param	expression	The expression to evaluate.
+		 * @param	message		The error message to display.
+		 */
+		public static function isFalse( expression: Boolean, message: String = null ): void
+		{
+			
+		}
 	}
 
 }

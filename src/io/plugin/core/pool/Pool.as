@@ -1,244 +1,115 @@
-/**
- * Gary Paluk - http://www.plugin.io
- * Copyright (c) 2011-2012
- * 
- * Distributed under the MIT License.
- * http://opensource.org/licenses/mit-license.php
- */
-package io.plugin.core.pool 
-{
-	import io.plugin.core.errors.IllegalArgumentError;
-	import io.plugin.core.interfaces.IDisposable;
-	import io.plugin.core.pool.store.IItemStore;
-	import io.plugin.core.pool.store.StackStore;
-	
+package io.plugin.core.pool {
+	import flash.utils.Dictionary;
+
 	/**
-	 * A general purpose Object Pool used for allocating objects for reuse
-	 * whilst avoiding garbage collection and minimizing object creation 
-	 * and destruction.
-	 * 
-	 * @author Gary Paluk
 	 */
-	public class Pool implements IDisposable
-	{
+	public class Pool {
+		//------------------------------------------------------------------------------------------
+		// PRIVATE VARIABLES
+		//------------------------------------------------------------------------------------------
 		
-		protected var _type: Class;
-		protected var _isDisposed: Boolean;
-		protected var _factory: Class;
-		protected var _loadingMode: LoadingMode;
-		protected var _itemStore: IItemStore;
-		protected var _size: int;
-		protected var _count: int;
+		private var m_cache:Array        = new Array();
+		private var m_index:Dictionary   = new Dictionary();
+		private var m_construct:Function = null;
+		private var m_destruct:Function  = null;
+		
+		private var m_size:int     = 0;
+		private var m_resize:int   = 0;
+		private var m_position:int = 0;
+		
+		//------------------------------------------------------------------------------------------
+		// CONSTRUCTOR
+		//------------------------------------------------------------------------------------------
 		
 		/**
-		 * Constructor - creates a new instance of a Pool object.
-		 * 
-		 * @param	type			The class type of the pooled objects
-		 * @param	factory			The factory class used to abstract the Pool data type from the Pool
-		 * @param	size			The size of the object pool
-		 * @param	loadingMode		The mode used to load objects in the Pool
-		 * @param	accessMode		The mode used to access objects in the Pool
 		 */
-		public function Pool( type: Class, factory: Class, size: int, loadingMode:LoadingMode = null, accessMode:AccessMode = null ) 
-		{
-			_type = type;
-			_size = size;
-			_loadingMode = loadingMode ;
-			_factory = factory;
-			_itemStore = createItemStore( accessMode, size );
+		public function Pool( constructor:Function, destructor:Function, size:uint, resize:uint = 0 ) {
+			m_construct = constructor;
+			m_destruct  = destructor;
+			m_resize    = resize;
 			
-			if ( loadingMode == LoadingMode.EAGER )
-			{
-				preloadItems();
-			}
+			expand( m_size );
 		}
 		
-		/**
-		 * Release an object back to the object Pool
-		 * 
-		 * @param	item	The item to release
-		 */
-		public function release( item: * ): void
-		{
-			// lock if threaded
-			_itemStore.store( item );
-		}
+		//------------------------------------------------------------------------------------------
+		// PUBLIC METHODS
+		//------------------------------------------------------------------------------------------
 		
 		/**
-		 * Preloads items into the object Pool when loadingMode is LoadingMode.EAGER
 		 */
-		private final function preloadItems(): void
-		{
-			var i: int;
-			for ( i = 0; i < _size; i++ )
-			{
-				var item: * = new _factory( this );
-				_itemStore.store( item );
-			}
-			_count = _size;
-		}
-		
-		/**
-		 * Creates an item store object used to encapsulate access to the object Pool
-		 * 
-		 * <p>NOTE: Currently only the AccessMode.LIFO mode is implemented</p>
-		 * 
-		 * @param	mode		The mode used to access the objects in the object Pool
-		 * @param	capacity	The maximum number of items in the object pool when the LoadingMode causes fixed length
-		 * 
-		 * @return The new <code>IItemStore</code> object
-		 */
-		private final function createItemStore( mode: AccessMode, capacity: int ): IItemStore
-		{
-			switch( mode )
-			{
-				case AccessMode.FIFO:
-						throw new IllegalArgumentError( "sorry, not yet implemented. Please use AccessMode.LIFO" );
-					break;
-				case AccessMode.LIFO:
-						return new StackStore( _factory, this, capacity );
-					break;
-				case AccessMode.CIRCULAR_STORE:
-						throw new IllegalArgumentError( "sorry, not yet implemented. Please use AccessMode.LIFO" );
-					break;
-				default:
-					throw new IllegalArgumentError();
-			}
-		}
-		
-		/**
-		 * Returns an object from the object pool. In some circumstances, where the pool
-		 * <code>LoadingMode</code> enables the pool to grow and all objects in the pool
-		 * are in use, a new object is returned.
-		 * 
-		 * <p>If the pools <code>LoadingMode</code> causes a fixed size pool length, it
-		 * is the programmers responsibilty to ensure that he/she does not exceed this
-		 * pool size</p>
-		 * 
-		 * @return	An object from the pool
-		 */
-		public function acquire(): *
-		{
-			switch( _loadingMode )
-			{
-				case LoadingMode.EAGER:
-						return acquireEager();
-					break;
-				case LoadingMode.LAZY:
-						return acquireLazy();
-					break;
-				case LoadingMode.LAZY_EXPANDING:
-						return acquireLazyExpanding();
-					break;
-				default:
-					throw new IllegalArgumentError();
-			}
-		}
-		
-		/**
-		 * Acquire an object from the object pool using the eager creation type
-		 * 
-		 * @return	An object from the object pool
-		 */
-		private final function acquireEager(): *
-		{
-			// lock if threaded
-			return _itemStore.fetch();
-		}
-		
-		/**
-		 * Acquire an object from the object pool using the lazy creation type
-		 * 
-		 * @return	An object from the object pool
-		 */
-		private final function acquireLazy(): *
-		{
-			// lock if threaded
-			if ( _itemStore.count > 0 )
-			{
-				return _itemStore.fetch();
-			}
+		public final function pop():* {
+			var o:* = null;
 			
-			_count++;
-			return new _factory( this );
-		}
-		
-		/**
-		 * Acquire an object from the object pool using the aquire lazy creation type
-		 * 
-		 * @return	An object from the object pool
-		 */
-		private final function acquireLazyExpanding(): *
-		{
-			var shouldExpand: Boolean = false;
-			if ( _count < _size )
-			{
-				var newCount: int = _count++;
-				if ( newCount <= _size )
-				{
-					shouldExpand = true;
+			if( m_position == m_size ) {
+				if( m_resize == 0 ) {
+					throw new Error( "The pool is empty" );
 				}
-				else
-				{
-					_count--;
-				}
+				
+				expand( m_resize );
 			}
 			
-			if ( shouldExpand )
-			{
-				return new _factory( this );
-			}
-			else
-			{
-				// lock if threading
-				return _itemStore.fetch();
-			}
+			o = m_cache[ m_position++ ];
+			m_index[ o ] = null;
+			
+			return o;
 		}
 		
 		/**
-		 * Dispose of the <code>Pool</code> object 
 		 */
-		public function dispose(): void
-		{
-			if ( _isDisposed )
-			{
+		public final function push( o:* ):void {
+			if( m_index[ o ] === undefined ) {
+				throw new Error( "The specified object does not belong to the pool" );
+			}
+			
+			if( m_index[ o ] === o ) {
 				return;
 			}
 			
-			_isDisposed = true;
+			m_index[ o ] = o;
+			m_cache[ --m_position ] = o;
+			m_destruct( o );
+		}
+		
+		/**
+		 */
+		public final function dispose():void {
+			var o:* = null;
 			
-			// lock if threaded
-			while ( _itemStore.count > 0 )
-			{
-				try{
-					var disposable:IDisposable = _itemStore.fetch() as IDisposable;
-					disposable.dispose();
-				}
-				catch ( e:Error )
-				{
-					
-				}
+			for each( o in m_cache ) {
+				m_destruct( o );
 			}
 			
-			_loadingMode = null;
+			m_cache     = null;
+			m_index     = null;
+			m_construct = null;
+			m_destruct  = null;
+			m_size      = 0;
+			m_resize    = 0;
+			m_position  = 0;
 		}
+		
+		//------------------------------------------------------------------------------------------
+		// PRIVATE METHODS
+		//------------------------------------------------------------------------------------------
 		
 		/**
-		 * A flag indicating if the pool has been disposed. TRUE is disposed() has been called, otherwise FALSE
 		 */
-		public function get isDisposed():Boolean 
-		{
-			return _isDisposed;
+		private final function expand( count:int ):void {
+			var o:*   = null;
+			var i:int = m_size;
+			var n:int = m_size + count;
+			
+			while( i < n ) {
+				o = m_construct();
+				
+				m_cache[ i ] = o;
+				m_index[ o ] = o;
+				
+				i++;
+			}
+			
+			m_size = n;
 		}
-		
-		/**
-		 * The <code>LoadingMode</code> used as the strategy to load objects of this <code>Pool</code>
-		 */
-		public function get loadingMode():LoadingMode 
-		{
-			return _loadingMode;
-		}
-		
-	}
 
+	}// EOC
 }
