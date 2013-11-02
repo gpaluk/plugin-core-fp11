@@ -23,6 +23,25 @@ package io.plugin.core.graphics
 		
 		private var _needsUpdate: Boolean;
 		
+		public static function fromHexRGB( hexValue:uint ):Color
+		{
+			var r:int = (hexValue >> 16) & 0xff;
+			var g:int = (hexValue >> 8) & 0xff;
+			var b:int = hexValue & 0xff;
+			var invHex:Number = 1 / 0xff;
+			return new Color( r * invHex, g * invHex, b * invHex, 1 );
+		}
+		
+		public static function fromHexRGBA( hexValue:uint ):Color
+		{
+			var r:int = (hexValue >> 24) & 0xff;
+			var g:int = (hexValue >> 16) & 0xff;
+			var b:int = (hexValue >> 8) & 0xff;
+			var a:int = hexValue & 0xff;
+			var invHex:Number = 1 / 0xff;
+			return new Color( r * invHex, g * invHex, b * invHex, a * invHex );
+		}
+		
 		public function Color( r: Number = 0, g: Number = 0, b: Number = 0, a: Number = 1 ) 
 		{
 			_r = r;
